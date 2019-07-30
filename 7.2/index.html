@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理页面</title>
+    <link rel="stylesheet" href="./layui-v2.5.4/layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="./statics/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./statics/css/index.css">
+    <link rel="stylesheet" href="./layui-v2.5.4/layui/css/layui.css">
+</head>
+<body class="body">
+<div class="col-md-8">
+            <div class="row" style="margin-bottom: 5px">
+                <div class="col-md-7">
+                    <button class="btn btn-default" id="upload" type="submit">上传</button>
+                    <button class="btn btn-default" id="" type="submit">导出</button>
+                </div>
+                <nav aria-label="Page navigation" class="col-md-5" >
+
+                </nav>
+            </div>
+    <div class="container">
+            <div class="row">
+                <table class="article-table table table-bordered table-hover" border="1">
+                    <tr id="table">
+                        <th>选择</th>
+                        <th>序号</th>
+                        <th>文件名</th>
+                        <th>大小</th>
+                        <th>文件格式</th>
+                        <th>地址</th>
+                        <th>操作</th>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<td><input type="checkbox"></td>-->
+                        <!--<td>1</td>-->
+                        <!--<td>123.jpg</td>-->
+                        <!--<td>1234565</td>-->
+                        <!--<td>2533</td>-->
+                        <!--<td>jpg</td>-->
+                        <!--<td>/statis/123.jpg</td>-->
+                        <!--<td>-->
+                            <!--<span class="glyphicon ">查看</span>-->
+                            <!--<span class="glyphicon ">删除</span>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                </table>
+            </div>
+            <nav aria-label="Page navigation" class="col-md-5" style="float: right">
+                <ul class="pagination pull-right">
+                    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">2 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">3 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">4 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">5 <span class="sr-only">(current)</span></a></li>
+                    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&raquo;</span></a></li>
+                </ul>
+            </nav>
+    </div>
+    </div>
+</body>
+</html>
+<script src="./layui-v2.5.4/layui/layui.js"></script>
+<script src="./statics/js/jquery.js"></script>
+<!--<script src="./statics/js/bootstrap.min.js"></script>-->
+<script>
+    window.onload=function() {
+        var upload = document.querySelector('#upload');
+        upload.addEventListener('click',function() {
+            layui.use(['layer'], function(){
+                var layer = layui.layer;
+                layer.open({
+                    type: 2,
+                    title: '上传页',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['400px', '90%'],
+                    content: 'http://www.atest.com/imgIndex.html' //iframe的url
+                });
+            });
+
+        });
+
+        //从api获取数据
+        $.ajax({
+            url:'http://www.newapi.com/api/imgList',
+            type:'get',
+            dataType:'json',
+            timeout:'1000',
+            cache:'false',
+            error: erryFunction,
+            success: succFunction
+        });
+        //未从api获取到数据
+        function erryFunction() {
+            alert("请求错误");
+        }
+        //从api获取数据渲染页面
+        function succFunction(tt) {
+            if (tt){
+                var html = '';
+                for(var i in tt){
+                    html += '<tr>'+
+                            '<td><input type='+'"checkbox"></td>'+
+                            '<td>'+tt[i].id+'</td>'+
+                            '<td>'+tt[i].filename+'</td>'+
+                            '<td>'+tt[i].size+'</td>'+
+                            '<td>'+tt[i].format+'</td>'+
+                            '<td>'+tt[i].address+'</td>'+
+                            '<td>'+
+                            '<a href="" class="look" id="'+ tt[i].id +'" >查看</a>'+
+                    '<a href="javascript:;" class="del" id="'+ tt[i].id +'">删除</a>' +
+                    '</td>'+
+                    '</tr>'
+
+//
+                }
+                var oContent = $('table');
+                oContent.append(html);
+            }else {
+                alert('报错');
+            }
+        }
+        //删除
+       $(document).on('click','.del',function(){
+           var _this= $(this);
+           var id=_this.attr('id');
+//           console.log(id);
+           $.ajax({
+               url:'http://www.newapi.com/api/delete?id='+id,
+               type:'post',
+               cache:'false',
+               success:function (data) {
+                   if(data==1){
+                       alert('删除成功');
+                   }else{
+                       alert('删除失败');
+                   }
+                   history.go(0)
+               }
+           })
+       });
+
+        //查看
+        $(document).on('')
+    };
+
+</script>
